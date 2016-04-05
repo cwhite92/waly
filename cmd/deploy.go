@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"strings"
 	"time"
 
 	"github.com/aws/aws-sdk-go/aws"
@@ -83,10 +84,12 @@ func upload(svc *s3.S3, bucket string, prefix string) filepath.WalkFunc {
 
 		defer file.Close()
 
+		key := fmt.Sprintf("%s/%s", prefix, strings.Replace(path, source, "", -1))
+
 		_, err = svc.PutObject(&s3.PutObjectInput{
 			Body:   file,
 			Bucket: aws.String(bucket),
-			Key:    aws.String(fmt.Sprintf("%s/%s", prefix, path)),
+			Key:    aws.String(key),
 		})
 
 		if err != nil {
